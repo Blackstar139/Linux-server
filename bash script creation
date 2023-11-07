@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Update and upgrade the system
+sudo apt update
+sudo apt upgrade -y
+
+# Install essential packages
+sudo apt install -y openssh-server unzip
+
+# Configure SSH
+sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+sudo systemctl restart ssh
+
+# Add a user and set up SSH keys
+sudo useradd -m -s /bin/bash blackstar131
+sudo passwd blackstar131
+sudo usermod -aG sudo blackstar131
+sudo mkdir /home/blackstar131/.ssh
+sudo touch /home/blackstar131/.ssh/authorized_keys
+sudo chown -R blackstar131:blackstar131 /home/blackstar131/.ssh
+sudo chmod 700 /home/blackstar131/.ssh
+sudo chmod 600 /home/blackstar131/.ssh/authorized_keys
+
+# (Optional) Disable root login
+sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+sudo systemctl restart ssh
+
+# Set up a basic firewall (UFW)
+sudo apt install -y ufw
+sudo ufw allow OpenSSH
+sudo ufw enable
+sudo ufw status
+
+# (Optional) Install a web server (e.g., Nginx)
+# sudo apt install -y nginx
+# sudo ufw allow 'Nginx Full'
+# sudo systemctl start nginx
+# sudo systemctl enable nginx
+
+# (Optional) Install a database server (e.g., MySQL)
+# sudo apt install -y mysql-server
+# sudo mysql_secure_installation
+
+# (Optional) Install additional software or services as needed
+
+echo "Server setup complete. You can now log in with SSH using your SSH key."
